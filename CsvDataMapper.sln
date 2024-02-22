@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34607.119
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvDataMapper.Core", "CsvDataMapper.Core\CsvDataMapper.Core.csproj", "{A3853DA9-3D46-4D57-896B-562130EECDA1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CsvDataMapper.Tests", "CsvDataMapper.Tests\CsvDataMapper.Tests.csproj", "{CC011C2D-40AE-4BD0-B133-1F4E41368720}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A3853DA9-3D46-4D57-896B-562130EECDA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3853DA9-3D46-4D57-896B-562130EECDA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3853DA9-3D46-4D57-896B-562130EECDA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3853DA9-3D46-4D57-896B-562130EECDA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC011C2D-40AE-4BD0-B133-1F4E41368720}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC011C2D-40AE-4BD0-B133-1F4E41368720}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC011C2D-40AE-4BD0-B133-1F4E41368720}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC011C2D-40AE-4BD0-B133-1F4E41368720}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E9D60AE9-6350-43DF-BE65-D0BE1F73E000}
+	EndGlobalSection
+EndGlobal
