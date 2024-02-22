@@ -8,5 +8,7 @@ namespace CsvDataMapper.Core.Repositories.Interfaces
 {
     internal interface ICsvRepository
     {
+        Task<string> ReadCsvFileAsStringAsync();
+        string ReadCsvFileAsString();
     }
 }
