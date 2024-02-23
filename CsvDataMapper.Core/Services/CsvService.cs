@@ -49,8 +49,8 @@ namespace CsvDataMapper.Core.Services
                         CsvColumn csvColumn = new CsvColumn();
                         csvColumn.Name = property.Name;
 
-                        if (property.CustomAttributes.Any(x => x.AttributeType == typeof(ColumNameAttribute)))
-                            csvColumn.Name = property.GetCustomAttribute<ColumNameAttribute>().ColumnName;
+                        if (property.CustomAttributes.Any(x => x.AttributeType == typeof(ColumnNameAttribute)))
+                            csvColumn.Name = property.GetCustomAttribute<ColumnNameAttribute>().ColumnName;
                         if (property.CustomAttributes.Any(x => x.AttributeType == typeof(ColumnPositionAttribute)))
                         {
                             csvColumn.Index = property.GetCustomAttribute<ColumnPositionAttribute>().StartPosition;
@@ -75,7 +75,7 @@ namespace CsvDataMapper.Core.Services
                             {
                                 if (column.size > 0)
                                 {
-                                    string value = Datacolumns[i].Substring(column.Index, column.size);
+                                    string value = line.Substring(column.Index, column.size);
                                     column.PropertyInfo.SetValue(model, Convert.ChangeType(value, column.PropertyInfo.PropertyType, CultureInfo.InvariantCulture));
                                 }
                                 else
@@ -143,8 +143,8 @@ namespace CsvDataMapper.Core.Services
                         CsvColumn csvColumn = new CsvColumn();
                         csvColumn.Name = property.Name;
 
-                        if (property.CustomAttributes.Any(x => x.AttributeType == typeof(ColumNameAttribute)))
-                            csvColumn.Name = property.GetCustomAttribute<ColumNameAttribute>().ColumnName;
+                        if (property.CustomAttributes.Any(x => x.AttributeType == typeof(ColumnNameAttribute)))
+                            csvColumn.Name = property.GetCustomAttribute<ColumnNameAttribute>().ColumnName;
                         if (property.CustomAttributes.Any(x => x.AttributeType == typeof(ColumnPositionAttribute)))
                         {
                             csvColumn.Index = property.GetCustomAttribute<ColumnPositionAttribute>().StartPosition;
