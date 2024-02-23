@@ -126,6 +126,9 @@
   <data name="101" xml:space="preserve">
     <value>Access to the file was denied.</value>
   </data>
+  <data name="102" xml:space="preserve">
+    <value>An I/O error occurred while reading the file</value>
+  </data>
   <data name="200" xml:space="preserve">
     <value>The CSV file format is invalid.</value>
   </data>

@@ -12,5 +12,9 @@ namespace CsvDataMapper.Core.Repositories.Interfaces
         string ReadCsvFileAsString();
         IAsyncEnumerable<string> ReadCsvFileInChunksAsync(int chunkSize, long startPosition = 0);
         IEnumerable<string> ReadCsvFileInChunks(int chunkSize, long startPosition = 0);
+        Task<string> ReadAllCsvFileLineByLineAsync();
+        string ReadAllCsvFileLineByLine();
+        Task<string?> ReadCsvFileLineAsync();
+        string? ReadCsvFileLine();
     }
 }

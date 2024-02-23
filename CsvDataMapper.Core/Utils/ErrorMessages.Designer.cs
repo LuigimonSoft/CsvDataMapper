@@ -88,6 +88,15 @@ namespace CsvDataMapper.Core.Utils {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An I/O error occurred while reading the file.
+        /// </summary>
+        internal static string _102 {
+            get {
+                return ResourceManager.GetString("102", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The CSV file format is invalid..
         /// </summary>
         internal static string _200 {
