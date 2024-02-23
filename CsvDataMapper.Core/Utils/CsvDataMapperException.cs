@@ -11,7 +11,7 @@ namespace CsvDataMapper.Core.Utils
     public class CsvDataMapperException: Exception
     {
         public ErrorCode ErrorCode { get; }
-        private static readonly ResourceManager _resourceManager = new ResourceManager("CsvDataMapper.Core.Resources.ErrorMessages", typeof(ErrorMessages).Assembly);
+        private static readonly ResourceManager _resourceManager = new ResourceManager("CsvDataMapper.Core.Utils.ErrorMessages", typeof(ErrorMessages).Assembly);
 
         public CsvDataMapperException(ErrorCode errorCode) : base(GetErrorMessage(errorCode))
         {
@@ -25,7 +25,7 @@ namespace CsvDataMapper.Core.Utils
 
         private static string GetErrorMessage(ErrorCode errorCode)
         {
-            return _resourceManager.GetString(errorCode.ToString(), CultureInfo.CurrentCulture) ?? "Unknown error.";
+            return _resourceManager.GetString(((int)errorCode).ToString(), CultureInfo.CurrentCulture) ?? "Unknown error.";
         }
     }
 }

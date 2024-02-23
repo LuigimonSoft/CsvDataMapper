@@ -64,7 +64,29 @@ namespace CsvDataMapper.Core.Services
 
                 while ((line = _csvRepository.ReadCsvFileLine()) != null)
                 {
+                    if (line.Contains("[") && line.Contains("]") )
+                    {
+                        int ini = line.IndexOf("[");
+                        int end = line.IndexOf("]");
+                        string substring = line.Substring(ini, end - ini + 1);
+                        substring = substring.Replace(",", "|");
+                        line = line.Replace(line.Substring(ini, end - ini + 1), substring);
+                    }
                     string[] Datacolumns = line.Split(_delimiter);
+                    if(Datacolumns.Contains("[") && Datacolumns.Contains("]"))
+                    {
+                        for (int i = 0; i < Datacolumns.Length; i++)
+                        {
+                            if (Datacolumns[i].Contains("[") && Datacolumns[i].Contains("]"))
+                            {
+                                int ini = Datacolumns[i].IndexOf("[");
+                                int end = Datacolumns[i].IndexOf("]");
+                                string substring = Datacolumns[i].Substring(ini, end - ini + 1);
+                                substring = substring.Replace("|", ",");
+                                Datacolumns[i] = Datacolumns[i].Replace(Datacolumns[i].Substring(ini, end - ini + 1), substring);
+                            }
+                        }
+                    }
 
                     if (_hasHeader)
                     {
@@ -126,7 +148,7 @@ namespace CsvDataMapper.Core.Services
             {
                 string? line = string.Empty;
                 string[] columnsHeaders = Array.Empty<string>();
-                var model = new TModel();
+                
                 var properties = typeof(TModel).GetProperties();
                 var columns = new List<CsvColumn>();
 
@@ -158,9 +180,21 @@ namespace CsvDataMapper.Core.Services
 
                 while ((line = await _csvRepository.ReadCsvFileLineAsync()) != null)
                 {
-                    string[] Datacolumns = line.Split(_delimiter);
+                    var model = new TModel();
+                    string[] Datacolumns =new string[] { };
+                    if (line.Contains("[") && line.Contains("]"))
+                    {
+                        int ini = line.IndexOf("[");
+                        int end = line.IndexOf("]");
+                        string substring = line.Substring(ini, end - ini + 1);
+                        substring = substring.Replace(",", "|");
+                        line = line.Replace(line.Substring(ini, end - ini + 1), substring);
 
-                    if(_hasHeader)
+                    }
+                    
+                    Datacolumns = line.Split(_delimiter);
+
+                    if (_hasHeader)
                     {
                         for (int i = 0; i < columns.Count; i++)
                         {
@@ -179,7 +213,15 @@ namespace CsvDataMapper.Core.Services
                             }
                             else
                             {
-                                column.PropertyInfo.SetValue(model, Convert.ChangeType(Datacolumns[i], column.PropertyInfo.PropertyType, CultureInfo.InvariantCulture));
+                                if (Datacolumns[i].Contains("[") && Datacolumns[i].Contains("]"))
+                                {
+                                    Datacolumns[i] = Datacolumns[i].Replace("[", "");
+                                    Datacolumns[i] = Datacolumns[i].Replace("]", "").Replace("\"","");
+                                    var dataArray = Datacolumns[i].Trim().Count() > 0 ? Datacolumns[i].Split("|").ToList() : new List<string>();
+                                    column.PropertyInfo.SetValue(model, dataArray);
+                                }
+                                else
+                                    column.PropertyInfo.SetValue(model, Convert.ChangeType(Datacolumns[i], column.PropertyInfo.PropertyType, CultureInfo.InvariantCulture));
                             }
                         }
                     }
