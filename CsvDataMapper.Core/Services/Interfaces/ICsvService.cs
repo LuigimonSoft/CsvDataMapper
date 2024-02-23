@@ -10,5 +10,7 @@ namespace CsvDataMapper.Core.Services.Interfaces
     {
         Task<IList<TModel>> MapCsvToListModelAsync<TModel>() where TModel : new();
         IList<TModel> MapCsvToListModel<TModel>() where TModel : new();
+        Task<List<Dictionary<string, string>>> ReadCsvAsDynamicAsync();
+        List<Dictionary<string, string>> ReadCsvAsDynamic();
     }
 }

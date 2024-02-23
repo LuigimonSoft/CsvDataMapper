@@ -213,6 +213,66 @@ namespace CsvDataMapper.Core.Services
             return models;
         }
 
-        
+        public List<Dictionary<string, string>> ReadCsvAsDynamic()
+        {
+            var result = new List<Dictionary<string, string>>();
+            var headers = new List<string>();
+            bool isFirstRow = true;
+            string? line = string.Empty;
+
+            if (_hasHeader)
+            {
+                line = _csvRepository.ReadCsvFileLine();
+                if (String.IsNullOrEmpty(line))
+                    throw new CsvDataMapperException(ErrorCode.InvalidCsvFormat);
+                headers.AddRange(line.Split(_delimiter));
+            }
+
+            while ((line = _csvRepository.ReadCsvFileLine()) != null)
+            {
+                var columns = line.Split(_delimiter);
+
+                var row = new Dictionary<string, string>();
+                for (int i = 0; i < columns.Length; i++)
+                {
+                    var key = _hasHeader ? headers[i] : $"Column{i}";
+                    row[key] = columns[i];
+                }
+                result.Add(row);
+            }
+
+            return result;
+        }
+
+        public async Task<List<Dictionary<string, string>>> ReadCsvAsDynamicAsync()
+        {
+            var result = new List<Dictionary<string, string>>();
+            var headers = new List<string>();
+            bool isFirstRow = true;
+            string? line = string.Empty;
+
+            if (_hasHeader)
+            {
+                line = await _csvRepository.ReadCsvFileLineAsync();
+                if(String.IsNullOrEmpty(line))
+                    throw new CsvDataMapperException(ErrorCode.InvalidCsvFormat);
+                headers.AddRange(line.Split(_delimiter));
+            }
+
+            while ((line = await _csvRepository.ReadCsvFileLineAsync()) != null)
+            {
+                var columns = line.Split(_delimiter);
+                
+                var row = new Dictionary<string, string>();
+                for (int i = 0; i < columns.Length; i++)
+                {
+                    var key = _hasHeader ? headers[i] : $"Column{i}";
+                    row[key] = columns[i];
+                }
+                result.Add(row);
+            }
+
+            return result;
+        }
     }
 }
