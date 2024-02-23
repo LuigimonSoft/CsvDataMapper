@@ -65,7 +65,45 @@ namespace CsvDataMapper.Core.Repositories
                 throw new CsvDataMapperException(ErrorCode.GeneralError,ex);
             }
         }
+        #endregion
 
+        #region ReadCsvFileInChunks
+        public IEnumerable<string> ReadCsvFileInChunks(int chunkSize, long startPosition = 0)
+        {
+            var buffer = new char[chunkSize];
+
+            using (var fileStream = File.OpenRead(_csvFilePath))
+            {
+                fileStream.Seek(startPosition, SeekOrigin.Begin);
+                using (var streamReader = new StreamReader(fileStream, _encoding))
+                {
+                    while (streamReader.Read(buffer, 0, buffer.Length) > 0)
+                    {
+                        yield return new string(buffer);
+                        Array.Clear(buffer, 0, buffer.Length);
+                    }
+                }
+            }
+        }
+
+        public async IAsyncEnumerable<string> ReadCsvFileInChunksAsync(int chunkSize, long startPosition = 0)
+        {
+            var buffer = new char[chunkSize];
+
+            using (var fileStream = File.OpenRead(_csvFilePath))
+            {
+                fileStream.Seek(startPosition, SeekOrigin.Begin);
+
+                using (var streamReader = new StreamReader(fileStream, _encoding))
+                {
+                    while (await streamReader.ReadAsync(buffer, 0, buffer.Length) > 0)
+                    {
+                        yield return new string(buffer);
+                        Array.Clear(buffer, 0, buffer.Length);
+                    }
+                }
+            }
+        }
         #endregion
     }
 }
