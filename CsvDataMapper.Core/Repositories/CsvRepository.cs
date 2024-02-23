@@ -12,6 +12,7 @@ namespace CsvDataMapper.Core.Repositories
     {
         private string _csvFilePath;
         private Encoding _encoding = Encoding.UTF8;
+        private StreamReader _streamReader;
 
         public CsvRepository(string csvFilePath)
         {
@@ -103,6 +104,150 @@ namespace CsvDataMapper.Core.Repositories
                     }
                 }
             }
+        }
+        #endregion
+
+        #region ReadCsvFileLine
+        public string ReadAllCsvFileLineByLine()
+        {
+            try
+            {
+                using (var fileStream = File.OpenRead(_csvFilePath))
+                using (var streamReader = new StreamReader(fileStream, _encoding))
+                {
+                    string? line;
+                    StringBuilder lines = new StringBuilder();
+                    while ((line = streamReader.ReadLine()) != null)
+                        lines.AppendLine(line);
+                    return lines.ToString();
+                }
+            }
+            catch (FileNotFoundException ex)
+            {
+                throw new CsvDataMapperException(ErrorCode.FileNotFound, ex);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                throw new CsvDataMapperException(ErrorCode.FileAccessDenied, ex);
+            }
+            catch (Exception ex)
+            {
+                throw new CsvDataMapperException(ErrorCode.GeneralError, ex);
+            }
+        }
+
+        public async Task<string> ReadAllCsvFileLineByLineAsync()
+        {
+            try
+            {
+                using (var fileStream = File.OpenRead(_csvFilePath))
+                using (var streamReader = new StreamReader(fileStream, _encoding))
+                {
+                    string? line;
+                    StringBuilder lines = new StringBuilder();
+                    while ((line = await streamReader.ReadLineAsync()) != null)
+                        lines.AppendLine(line);
+                    return lines.ToString();
+                }
+            }
+            catch (FileNotFoundException ex)
+            {
+                throw new CsvDataMapperException(ErrorCode.FileNotFound, ex);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                throw new CsvDataMapperException(ErrorCode.FileAccessDenied, ex);
+            }
+            catch (Exception ex)
+            {
+                throw new CsvDataMapperException(ErrorCode.GeneralError, ex);
+            }
+        }
+
+        public async Task<string?> ReadCsvFileLineAsync()
+        {
+            try
+            {
+                if (_streamReader == null)
+                {
+                    _streamReader?.Dispose(); 
+                    _streamReader = new StreamReader(_csvFilePath, _encoding);
+                }
+
+                if (_streamReader.EndOfStream)
+                {
+                    DisposeStreamReader();
+                    return null;
+                }
+
+                return await _streamReader.ReadLineAsync();
+            }
+            catch (FileNotFoundException ex)
+            {
+                DisposeStreamReader();
+                throw new CsvDataMapperException(ErrorCode.FileNotFound, ex);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                DisposeStreamReader();
+                throw new CsvDataMapperException(ErrorCode.FileAccessDenied, ex);
+            }
+            catch (IOException ex)
+            {
+                DisposeStreamReader();
+                throw new CsvDataMapperException(ErrorCode.IOError, ex);
+            }
+            catch (Exception ex)
+            {
+                DisposeStreamReader();
+                throw new CsvDataMapperException(ErrorCode.GeneralError, ex);
+            }
+        }
+
+        public string? ReadCsvFileLine()
+        {
+            try
+            {
+                if (_streamReader == null)
+                {
+                    _streamReader?.Dispose();
+                    _streamReader = new StreamReader(_csvFilePath, _encoding);
+                }
+
+                if (_streamReader.EndOfStream)
+                {
+                    DisposeStreamReader();
+                    return null;
+                }
+
+                return _streamReader.ReadLine();
+            }
+            catch (FileNotFoundException ex)
+            {
+                DisposeStreamReader();
+                throw new CsvDataMapperException(ErrorCode.FileNotFound, ex);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                DisposeStreamReader();
+                throw new CsvDataMapperException(ErrorCode.FileAccessDenied, ex);
+            }
+            catch (IOException ex)
+            {
+                DisposeStreamReader();
+                throw new CsvDataMapperException(ErrorCode.IOError, ex);
+            }
+            catch (Exception ex)
+            {
+                DisposeStreamReader();
+                throw new CsvDataMapperException(ErrorCode.GeneralError, ex);
+            }
+        }
+
+        private void DisposeStreamReader()
+        {
+            _streamReader?.Dispose();
+            _streamReader = null;
         }
         #endregion
     }

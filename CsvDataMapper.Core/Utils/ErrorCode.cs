@@ -11,6 +11,7 @@ namespace CsvDataMapper.Core.Utils
         GeneralError = 1,
         FileNotFound = 100,
         FileAccessDenied = 101,
+        IOError = 102,
         InvalidCsvFormat = 200,
         ParsingError = 201,
     }
