@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <AssemblyName>CsvDataMapper</AssemblyName>
     <AssemblyVersion>1.0.0.1</AssemblyVersion>
+    <FileVersion>1.0.01</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
