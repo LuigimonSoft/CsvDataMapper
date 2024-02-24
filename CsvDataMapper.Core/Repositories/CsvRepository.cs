@@ -257,7 +257,7 @@ namespace CsvDataMapper.Core.Repositories
         {
             try
             {
-                using (var streamWriter = new StreamWriter(_csvFilePath, append: true, _encoding))
+                using (var streamWriter = new StreamWriter(_csvFilePath, append: false, _encoding))
                 {
                     foreach (var line in lines)
                         await streamWriter.WriteLineAsync(line);
@@ -287,7 +287,7 @@ namespace CsvDataMapper.Core.Repositories
         {
             try
             {
-                using (var streamWriter = new StreamWriter(_csvFilePath, append: true, _encoding))
+                using (var streamWriter = new StreamWriter(_csvFilePath, append: false, _encoding))
                 {
                     foreach (var line in lines)
                         streamWriter.WriteLine(line);
