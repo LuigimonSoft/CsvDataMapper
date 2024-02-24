@@ -77,7 +77,7 @@ namespace CsvDataMapper.Core.Services
 
                     Datacolumns = line.Split(_delimiter);
 
-                    if(Datacolumns.Contains("[") && Datacolumns.Contains("]"))
+                    if (Datacolumns.Contains("[") && Datacolumns.Contains("]"))
                     {
                         for (int i = 0; i < Datacolumns.Length; i++)
                         {
@@ -160,14 +160,14 @@ namespace CsvDataMapper.Core.Services
             {
                 string? line = string.Empty;
                 string[] columnsHeaders = Array.Empty<string>();
-                
+
                 var properties = typeof(TModel).GetProperties();
                 var columns = new List<CsvColumn>();
 
                 if (_hasHeader)
                 {
                     line = await _csvRepository.ReadCsvFileLineAsync();
-                    if(line == null)
+                    if (line == null)
                         throw new CsvDataMapperException(ErrorCode.InvalidCsvFormat);
 
                     columnsHeaders = line.Split(_delimiter);
@@ -193,7 +193,7 @@ namespace CsvDataMapper.Core.Services
                 while ((line = await _csvRepository.ReadCsvFileLineAsync()) != null)
                 {
                     var model = new TModel();
-                    string[] Datacolumns =new string[] { };
+                    string[] Datacolumns = new string[] { };
                     if (line.Contains("[") && line.Contains("]"))
                     {
                         int ini = line.IndexOf("[");
@@ -203,7 +203,7 @@ namespace CsvDataMapper.Core.Services
                         line = line.Replace(line.Substring(ini, end - ini + 1), substring);
 
                     }
-                    
+
                     Datacolumns = line.Split(_delimiter);
 
                     if (_hasHeader)
@@ -228,7 +228,7 @@ namespace CsvDataMapper.Core.Services
                                 if (Datacolumns[i].Contains("[") && Datacolumns[i].Contains("]"))
                                 {
                                     Datacolumns[i] = Datacolumns[i].Replace("[", "");
-                                    Datacolumns[i] = Datacolumns[i].Replace("]", "").Replace("\"","");
+                                    Datacolumns[i] = Datacolumns[i].Replace("]", "").Replace("\"", "");
                                     var dataArray = Datacolumns[i].Trim().Count() > 0 ? Datacolumns[i].Split("|").ToList() : new List<string>();
                                     column.PropertyInfo.SetValue(model, dataArray);
                                 }
@@ -245,9 +245,9 @@ namespace CsvDataMapper.Core.Services
                             column.PropertyInfo.SetValue(model, Convert.ChangeType(Datacolumns[i], column.PropertyInfo.PropertyType, CultureInfo.InvariantCulture));
                         }
                     }
-                        
-                    
-                    
+
+
+
                     models.Add(model);
                 }
             }
@@ -308,7 +308,7 @@ namespace CsvDataMapper.Core.Services
             if (_hasHeader)
             {
                 line = await _csvRepository.ReadCsvFileLineAsync();
-                if(String.IsNullOrEmpty(line))
+                if (String.IsNullOrEmpty(line))
                     throw new CsvDataMapperException(ErrorCode.InvalidCsvFormat);
                 headers.AddRange(line.Split(_delimiter));
             }
@@ -316,7 +316,7 @@ namespace CsvDataMapper.Core.Services
             while ((line = await _csvRepository.ReadCsvFileLineAsync()) != null)
             {
                 var columns = line.Split(_delimiter);
-                
+
                 var row = new Dictionary<string, string>();
                 for (int i = 0; i < columns.Length; i++)
                 {
@@ -327,6 +327,49 @@ namespace CsvDataMapper.Core.Services
             }
 
             return result;
+        }
+
+        public bool WriteModelToCsv<TModel>(IEnumerable<TModel> models) where TModel : new()
+        {
+            return _csvRepository.WriteLines(WriteModel(models));
+        }
+
+        public async Task<bool> WriteModelToCsvAsync<TModel>(IEnumerable<TModel> models) where TModel : new()
+        {
+            return await _csvRepository.WriteLinesAsync(WriteModel(models));
+        }
+
+        private List<string> WriteModel<TModel>(IEnumerable<TModel> models) where TModel : new ()
+        {
+            var lines = new List<string>();
+
+            var properties = typeof(TModel).GetProperties()
+                .Select(p => new
+                {
+                    Property = p,
+                    Order = p.GetCustomAttribute<ColumnOrderAttribute>()?.Order ?? int.MaxValue,
+                    ColumnName = p.GetCustomAttribute<ColumnNameAttribute>()?.ColumnName ?? p.Name
+                })
+                .OrderBy(p => p.Order)
+                .ToList();
+
+            var header = string.Join(",", properties.Select(p => "\"" + p.ColumnName.Replace("\"", "\"\"") + "\""));
+            lines.Add(header);
+
+
+            foreach (var model in models)
+            {
+                var lineValues = properties.Select(prop =>
+                {
+                    var rawValue = prop.Property.GetValue(model)?.ToString() ?? "";
+                    var escapedValue = rawValue.Replace("\"", "\"\"");
+                    return (rawValue.Contains(",") || rawValue.Contains("\"")) ? $"\"{escapedValue}\"" : escapedValue;
+                });
+
+                lines.Add(string.Join(",", lineValues));
+            }
+
+            return lines;
         }
     }
 }
