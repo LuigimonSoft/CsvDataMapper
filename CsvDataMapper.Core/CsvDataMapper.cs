@@ -49,5 +49,17 @@ namespace CsvDataMapper.Core
             SetCsvService();
             return await _csvService.ReadCsvAsDynamicAsync();
         }
+
+        public async Task<bool> WriteModelToCsvAsync<TModel>(IEnumerable<TModel> models) where TModel : new()
+        {
+            SetCsvService();
+            return await _csvService.WriteModelToCsvAsync(models);
+        }
+
+        public bool WriteModelToCsv<TModel>(IEnumerable<TModel> models) where TModel : new()
+        {
+            SetCsvService();
+            return _csvService.WriteModelToCsv(models);
+        }
     }
 }
