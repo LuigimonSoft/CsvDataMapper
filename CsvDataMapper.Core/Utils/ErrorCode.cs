@@ -14,5 +14,7 @@ namespace CsvDataMapper.Core.Utils
         IOError = 102,
         InvalidCsvFormat = 200,
         ParsingError = 201,
+        DirectoryNotFound = 203,
+        IOErrorWriter = 204,
     }
 }

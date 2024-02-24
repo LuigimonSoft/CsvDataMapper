@@ -16,5 +16,7 @@ namespace CsvDataMapper.Core.Repositories.Interfaces
         string ReadAllCsvFileLineByLine();
         Task<string?> ReadCsvFileLineAsync();
         string? ReadCsvFileLine();
+        Task<bool> WriteLinesAsync(IEnumerable<string> lines);
+        bool WriteLines(IEnumerable<string> lines);
     }
 }
