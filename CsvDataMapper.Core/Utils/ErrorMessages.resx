@@ -135,4 +135,10 @@
   <data name="201" xml:space="preserve">
     <value>An error occurred while parsing the CSV file</value>
   </data>
+  <data name="203" xml:space="preserve">
+    <value>The directory for the file CSV does not exist.</value>
+  </data>
+  <data name="204" xml:space="preserve">
+    <value>An I/O error occurred while writing the file</value>
+  </data>
 </root>

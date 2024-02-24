@@ -249,6 +249,68 @@ namespace CsvDataMapper.Core.Repositories
             _streamReader?.Dispose();
             _streamReader = null;
         }
+
+        #endregion
+
+        #region WriteCsvFile
+        public async Task<bool> WriteLinesAsync(IEnumerable<string> lines)
+        {
+            try
+            {
+                using (var streamWriter = new StreamWriter(_csvFilePath, append: true, _encoding))
+                {
+                    foreach (var line in lines)
+                        await streamWriter.WriteLineAsync(line);
+                    return true;
+                }
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                throw new CsvDataMapperException(ErrorCode.FileAccessDenied, ex);
+            }
+            catch (DirectoryNotFoundException ex)
+            {
+                throw new CsvDataMapperException(ErrorCode.DirectoryNotFound, ex);
+            }
+            catch (IOException ex)
+            {
+                throw new CsvDataMapperException(ErrorCode.IOErrorWriter, ex);
+            }
+            catch (Exception ex)
+            {
+                throw new CsvDataMapperException(ErrorCode.GeneralError, ex);
+            }
+
+        }
+
+        public bool WriteLines(IEnumerable<string> lines)
+        {
+            try
+            {
+                using (var streamWriter = new StreamWriter(_csvFilePath, append: true, _encoding))
+                {
+                    foreach (var line in lines)
+                        streamWriter.WriteLine(line);
+                    return true;
+                }
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                throw new CsvDataMapperException(ErrorCode.FileAccessDenied, ex);
+            }
+            catch (DirectoryNotFoundException ex)
+            {
+                throw new CsvDataMapperException(ErrorCode.DirectoryNotFound, ex);
+            }
+            catch (IOException ex)
+            {
+                throw new CsvDataMapperException(ErrorCode.IOErrorWriter, ex);
+            }
+            catch (Exception ex)
+            {
+                throw new CsvDataMapperException(ErrorCode.GeneralError, ex);
+            }
+        }
         #endregion
     }
 }

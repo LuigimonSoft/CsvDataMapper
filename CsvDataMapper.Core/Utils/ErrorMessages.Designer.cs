@@ -113,5 +113,23 @@ namespace CsvDataMapper.Core.Utils {
                 return ResourceManager.GetString("201", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The directory for the file CSV does not exist..
+        /// </summary>
+        internal static string _203 {
+            get {
+                return ResourceManager.GetString("203", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An I/O error occurred while writing the file.
+        /// </summary>
+        internal static string _204 {
+            get {
+                return ResourceManager.GetString("204", resourceCulture);
+            }
+        }
     }
 }
