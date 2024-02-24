@@ -353,7 +353,7 @@ namespace CsvDataMapper.Core.Services
                 .OrderBy(p => p.Order)
                 .ToList();
 
-            var header = string.Join(",", properties.Select(p => "\"" + p.ColumnName.Replace("\"", "\"\"") + "\""));
+            var header = string.Join(",", properties.Select(p => p.ColumnName.Replace("\"", "\"\"")));
             lines.Add(header);
 
 
