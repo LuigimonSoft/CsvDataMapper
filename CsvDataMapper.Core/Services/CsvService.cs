@@ -137,6 +137,10 @@ namespace CsvDataMapper.Core.Services
                     models.Add(model);
                 }
             }
+            catch (CsvDataMapperException ex)
+            {
+                throw;
+            }
             catch (FileNotFoundException ex)
             {
                 throw new CsvDataMapperException(ErrorCode.FileNotFound);
@@ -250,6 +254,10 @@ namespace CsvDataMapper.Core.Services
 
                     models.Add(model);
                 }
+            }
+            catch(CsvDataMapperException ex)
+            {
+                throw;
             }
             catch (FileNotFoundException ex)
             {

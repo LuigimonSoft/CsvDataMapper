@@ -5,18 +5,23 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AssemblyName>CsvDataMapper</AssemblyName>
-    <AssemblyVersion>1.0.2</AssemblyVersion>
-    <FileVersion>1.0.2</FileVersion>
-    <Version>1.0.2</Version>
+    <AssemblyVersion>1.0.3</AssemblyVersion>
+    <FileVersion>1.0.3</FileVersion>
+    <Version>1.0.3</Version>
     <Authors>Luis Carlos Carrillo</Authors>
     <Description>CsvDataMapper is a powerful .NET library designed to streamline the process of working with CSV files by providing robust data mapping and modeling capabilities. Whether you're reading from or writing to CSV files, CsvDataMapper offers a flexible, rule-based approach that simplifies data manipulation, making it an indispensable tool for developers dealing with data-driven applications.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryUrl>https://github.com/LuigimonSoft/CsvDataMapper</RepositoryUrl>
     <PackageProjectUrl>https://github.com/LuigimonSoft/CsvDataMapper</PackageProjectUrl>
     <Title>Data Mapping and Modeling for CSV Files</Title>
+    <PackageIcon>CsvDataMapper.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\CsvDataMapper.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
     <None Include="..\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
