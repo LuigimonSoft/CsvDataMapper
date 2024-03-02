@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
 
 namespace CsvDataMapper.Core.Services
 {
@@ -48,12 +49,14 @@ namespace CsvDataMapper.Core.Services
                         CsvColumn csvColumn = new CsvColumn();
                         csvColumn.Name = property.Name;
 
-                        if (property.CustomAttributes.Any(x => x.AttributeType == typeof(ColumnNameAttribute)))
-                            csvColumn.Name = property.GetCustomAttribute<ColumnNameAttribute>().ColumnName;
-                        if (property.CustomAttributes.Any(x => x.AttributeType == typeof(ColumnPositionAttribute)))
+                        if (property.CustomAttributes.Any(x => x.AttributeType == typeof(ColumnAttribute)))
                         {
-                            csvColumn.Index = property.GetCustomAttribute<ColumnPositionAttribute>().StartPosition;
-                            csvColumn.size = property.GetCustomAttribute<ColumnPositionAttribute>().Size;
+                            var csvColumnAttribute = property.GetCustomAttribute<ColumnAttribute>();
+                            csvColumn.Name = csvColumnAttribute.ColumnName;
+
+                            csvColumn.Index = csvColumnAttribute.Position ?? -1;
+                            csvColumn.size = csvColumnAttribute.Size ?? -1;
+                            csvColumn.Order = csvColumnAttribute.Order ?? -1;
                         }
 
                         csvColumn.PropertyInfo = property;
@@ -181,12 +184,14 @@ namespace CsvDataMapper.Core.Services
                         CsvColumn csvColumn = new CsvColumn();
                         csvColumn.Name = property.Name;
 
-                        if (property.CustomAttributes.Any(x => x.AttributeType == typeof(ColumnNameAttribute)))
-                            csvColumn.Name = property.GetCustomAttribute<ColumnNameAttribute>().ColumnName;
-                        if (property.CustomAttributes.Any(x => x.AttributeType == typeof(ColumnPositionAttribute)))
+                        if (property.CustomAttributes.Any(x => x.AttributeType == typeof(ColumnAttribute)))
                         {
-                            csvColumn.Index = property.GetCustomAttribute<ColumnPositionAttribute>().StartPosition;
-                            csvColumn.size = property.GetCustomAttribute<ColumnPositionAttribute>().Size;
+                            var csvColumnAttribute = property.GetCustomAttribute<ColumnAttribute>();
+                            csvColumn.Name = csvColumnAttribute.ColumnName;
+
+                            csvColumn.Index = csvColumnAttribute.Position??-1;
+                            csvColumn.size = csvColumnAttribute.Size??-1;
+                            csvColumn.Order = csvColumnAttribute.Order??-1;
                         }
 
                         csvColumn.PropertyInfo = property;
@@ -355,8 +360,8 @@ namespace CsvDataMapper.Core.Services
                 .Select(p => new
                 {
                     Property = p,
-                    Order = p.GetCustomAttribute<ColumnOrderAttribute>()?.Order ?? int.MaxValue,
-                    ColumnName = p.GetCustomAttribute<ColumnNameAttribute>()?.ColumnName ?? p.Name
+                    Order = p.GetCustomAttribute<ColumnAttribute>()?.Order ?? int.MaxValue,
+                    ColumnName = p.GetCustomAttribute<ColumnAttribute>()?.ColumnName ?? p.Name
                 })
                 .OrderBy(p => p.Order)
                 .ToList();
