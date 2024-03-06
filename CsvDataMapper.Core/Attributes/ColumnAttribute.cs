@@ -19,5 +19,27 @@ namespace CsvDataMapper.Core.Attributes
         {
             ColumnName = columnName;
         }
+
+        public ColumnAttribute(string columnName, int order )
+        {
+            ColumnName = columnName;
+            Order = order;
+        }
+
+
+        public ColumnAttribute(string columnName,  int position, int size )
+        {
+            ColumnName = columnName;
+            Position = position;
+            Size = size;
+        }
+
+        public ColumnAttribute(string columnName, int order ,int position, int size)
+        {
+            ColumnName = columnName;
+            Position = position;
+            Size = size;
+            Order = order;
+        }
     }
 }
