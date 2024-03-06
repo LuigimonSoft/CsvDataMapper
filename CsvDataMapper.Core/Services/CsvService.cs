@@ -10,6 +10,9 @@ using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
+using System.Collections;
 
 namespace CsvDataMapper.Core.Services
 {
@@ -31,7 +34,6 @@ namespace CsvDataMapper.Core.Services
             try
             {
                 string? line = string.Empty;
-                string[] columnsHeaders = Array.Empty<string>();
                 var properties = typeof(TModel).GetProperties();
                 var columns = new List<CsvColumn>();
 
@@ -41,100 +43,12 @@ namespace CsvDataMapper.Core.Services
                     if (line == null)
                         throw new CsvDataMapperException(ErrorCode.InvalidCsvFormat);
 
-                    columnsHeaders = line.Split(_delimiter);
-
-                    foreach (var property in properties)
-                    {
-                        CsvColumn csvColumn = new CsvColumn();
-                        csvColumn.Name = property.Name;
-
-                        if (property.CustomAttributes.Any(x => x.AttributeType == typeof(ColumnNameAttribute)))
-                            csvColumn.Name = property.GetCustomAttribute<ColumnNameAttribute>().ColumnName;
-                        if (property.CustomAttributes.Any(x => x.AttributeType == typeof(ColumnPositionAttribute)))
-                        {
-                            csvColumn.Index = property.GetCustomAttribute<ColumnPositionAttribute>().StartPosition;
-                            csvColumn.size = property.GetCustomAttribute<ColumnPositionAttribute>().Size;
-                        }
-
-                        csvColumn.PropertyInfo = property;
-                        columns.Add(csvColumn);
-                    }
+                    columns = CreateColumnsList(line, properties);
                 }
 
                 while ((line = _csvRepository.ReadCsvFileLine()) != null)
                 {
-                    var model = new TModel();
-                    string[] Datacolumns = new string[] { };
-                    if (line.Contains("[") && line.Contains("]"))
-                    {
-                        int ini = line.IndexOf("[");
-                        int end = line.IndexOf("]");
-                        string substring = line.Substring(ini, end - ini + 1);
-                        substring = substring.Replace(",", "|");
-                        line = line.Replace(line.Substring(ini, end - ini + 1), substring);
-
-                    }
-
-                    Datacolumns = line.Split(_delimiter);
-
-                    if (Datacolumns.Contains("[") && Datacolumns.Contains("]"))
-                    {
-                        for (int i = 0; i < Datacolumns.Length; i++)
-                        {
-                            if (Datacolumns[i].Contains("[") && Datacolumns[i].Contains("]"))
-                            {
-                                int ini = Datacolumns[i].IndexOf("[");
-                                int end = Datacolumns[i].IndexOf("]");
-                                string substring = Datacolumns[i].Substring(ini, end - ini + 1);
-                                substring = substring.Replace("|", ",");
-                                Datacolumns[i] = Datacolumns[i].Replace(Datacolumns[i].Substring(ini, end - ini + 1), substring);
-                            }
-                        }
-                    }
-
-                    if (_hasHeader)
-                    {
-                        for (int i = 0; i < columns.Count; i++)
-                        {
-                            var column = columns[i];
-                            if (column.Index != -1)
-                            {
-                                if (column.size > 0)
-                                {
-                                    string value = line.Substring(column.Index, column.size);
-                                    column.PropertyInfo.SetValue(model, Convert.ChangeType(value, column.PropertyInfo.PropertyType, CultureInfo.InvariantCulture));
-                                }
-                                else
-                                {
-                                    column.PropertyInfo.SetValue(model, Convert.ChangeType(Datacolumns[i], column.PropertyInfo.PropertyType, CultureInfo.InvariantCulture));
-                                }
-                            }
-                            else
-                            {
-                                if (Datacolumns[i].Contains("[") && Datacolumns[i].Contains("]"))
-                                {
-                                    Datacolumns[i] = Datacolumns[i].Replace("[", "");
-                                    Datacolumns[i] = Datacolumns[i].Replace("]", "").Replace("\"", "");
-                                    var dataArray = Datacolumns[i].Trim().Count() > 0 ? Datacolumns[i].Split("|").ToList() : new List<string>();
-                                    column.PropertyInfo.SetValue(model, dataArray);
-                                }
-                                else
-                                    column.PropertyInfo.SetValue(model, Convert.ChangeType(Datacolumns[i], column.PropertyInfo.PropertyType, CultureInfo.InvariantCulture));
-                            }
-                        }
-                    }
-                    else
-                    {
-                        for (int i = 0; i < columns.Count; i++)
-                        {
-                            var column = columns[i];
-                            column.PropertyInfo.SetValue(model, Convert.ChangeType(Datacolumns[i], column.PropertyInfo.PropertyType, CultureInfo.InvariantCulture));
-                        }
-                    }
-
-
-
-                    models.Add(model);
+                    models.Add(LineToModel<TModel>(line, columns));
                 }
             }
             catch (CsvDataMapperException ex)
@@ -163,7 +77,6 @@ namespace CsvDataMapper.Core.Services
             try
             {
                 string? line = string.Empty;
-                string[] columnsHeaders = Array.Empty<string>();
 
                 var properties = typeof(TModel).GetProperties();
                 var columns = new List<CsvColumn>();
@@ -174,85 +87,12 @@ namespace CsvDataMapper.Core.Services
                     if (line == null)
                         throw new CsvDataMapperException(ErrorCode.InvalidCsvFormat);
 
-                    columnsHeaders = line.Split(_delimiter);
-
-                    foreach (var property in properties)
-                    {
-                        CsvColumn csvColumn = new CsvColumn();
-                        csvColumn.Name = property.Name;
-
-                        if (property.CustomAttributes.Any(x => x.AttributeType == typeof(ColumnNameAttribute)))
-                            csvColumn.Name = property.GetCustomAttribute<ColumnNameAttribute>().ColumnName;
-                        if (property.CustomAttributes.Any(x => x.AttributeType == typeof(ColumnPositionAttribute)))
-                        {
-                            csvColumn.Index = property.GetCustomAttribute<ColumnPositionAttribute>().StartPosition;
-                            csvColumn.size = property.GetCustomAttribute<ColumnPositionAttribute>().Size;
-                        }
-
-                        csvColumn.PropertyInfo = property;
-                        columns.Add(csvColumn);
-                    }
+                    columns = CreateColumnsList(line, properties);
                 }
 
                 while ((line = await _csvRepository.ReadCsvFileLineAsync()) != null)
                 {
-                    var model = new TModel();
-                    string[] Datacolumns = new string[] { };
-                    if (line.Contains("[") && line.Contains("]"))
-                    {
-                        int ini = line.IndexOf("[");
-                        int end = line.IndexOf("]");
-                        string substring = line.Substring(ini, end - ini + 1);
-                        substring = substring.Replace(",", "|");
-                        line = line.Replace(line.Substring(ini, end - ini + 1), substring);
-
-                    }
-
-                    Datacolumns = line.Split(_delimiter);
-
-                    if (_hasHeader)
-                    {
-                        for (int i = 0; i < columns.Count; i++)
-                        {
-                            var column = columns[i];
-                            if (column.Index != -1)
-                            {
-                                if (column.size > 0)
-                                {
-                                    string value = Datacolumns[i].Substring(column.Index, column.size);
-                                    column.PropertyInfo.SetValue(model, Convert.ChangeType(value, column.PropertyInfo.PropertyType, CultureInfo.InvariantCulture));
-                                }
-                                else
-                                {
-                                    column.PropertyInfo.SetValue(model, Convert.ChangeType(Datacolumns[i], column.PropertyInfo.PropertyType, CultureInfo.InvariantCulture));
-                                }
-                            }
-                            else
-                            {
-                                if (Datacolumns[i].Contains("[") && Datacolumns[i].Contains("]"))
-                                {
-                                    Datacolumns[i] = Datacolumns[i].Replace("[", "");
-                                    Datacolumns[i] = Datacolumns[i].Replace("]", "").Replace("\"", "");
-                                    var dataArray = Datacolumns[i].Trim().Count() > 0 ? Datacolumns[i].Split("|").ToList() : new List<string>();
-                                    column.PropertyInfo.SetValue(model, dataArray);
-                                }
-                                else
-                                    column.PropertyInfo.SetValue(model, Convert.ChangeType(Datacolumns[i], column.PropertyInfo.PropertyType, CultureInfo.InvariantCulture));
-                            }
-                        }
-                    }
-                    else
-                    {
-                        for (int i = 0; i < columns.Count; i++)
-                        {
-                            var column = columns[i];
-                            column.PropertyInfo.SetValue(model, Convert.ChangeType(Datacolumns[i], column.PropertyInfo.PropertyType, CultureInfo.InvariantCulture));
-                        }
-                    }
-
-
-
-                    models.Add(model);
+                    models.Add(LineToModel<TModel>(line, columns));
                 }
             }
             catch(CsvDataMapperException ex)
@@ -355,8 +195,8 @@ namespace CsvDataMapper.Core.Services
                 .Select(p => new
                 {
                     Property = p,
-                    Order = p.GetCustomAttribute<ColumnOrderAttribute>()?.Order ?? int.MaxValue,
-                    ColumnName = p.GetCustomAttribute<ColumnNameAttribute>()?.ColumnName ?? p.Name
+                    Order = p.GetCustomAttribute<ColumnAttribute>()?.Order ?? int.MaxValue,
+                    ColumnName = p.GetCustomAttribute<ColumnAttribute>()?.ColumnName ?? p.Name
                 })
                 .OrderBy(p => p.Order)
                 .ToList();
@@ -378,6 +218,113 @@ namespace CsvDataMapper.Core.Services
             }
 
             return lines;
+        }
+    
+        private List<CsvColumn> CreateColumnsList(string line, PropertyInfo[] properties)
+        {
+            var columns = new List<CsvColumn>();
+            string[] columnsHeaders = Array.Empty<string>();
+
+            columnsHeaders = line.Split(_delimiter);
+
+            foreach (var property in properties)
+            {
+                CsvColumn csvColumn = new CsvColumn();
+                csvColumn.Name = property.Name;
+
+                if (property.CustomAttributes.Any(x => x.AttributeType == typeof(ColumnAttribute)))
+                {
+                    var csvColumnAttribute = property.GetCustomAttribute<ColumnAttribute>();
+                    csvColumn.Name = csvColumnAttribute.ColumnName;
+
+                    csvColumn.Index = csvColumnAttribute.Position ?? -1;
+                    csvColumn.size = csvColumnAttribute.Size ?? -1;
+                    csvColumn.Order = csvColumnAttribute.Order ?? -1;
+                }
+
+                csvColumn.PropertyInfo = property;
+                columns.Add(csvColumn);
+            }
+
+            return columns;
+        }
+
+        private TModel LineToModel<TModel>(string line, List<CsvColumn> columns) where TModel : new()
+        {
+            var model = new TModel();
+            string[] Datacolumns = new string[] { };
+            if (line.Contains("[") && line.Contains("]"))
+            {
+                int iniIndex = 0;
+                while (line.Contains("[") && line.Contains("]") && line.IndexOf("[", iniIndex) > 0)
+                {
+                    int ini = line.IndexOf("[", iniIndex);
+                    int end = line.IndexOf("]", iniIndex);
+                    string substring = line.Substring(ini, end - ini + 1);
+                    substring = substring.Replace(",", "\uFFFF");
+                    line = line.Replace(line.Substring(ini, end - ini + 1), substring);
+                    iniIndex = end + 1;
+                }
+
+            }
+
+            line = Regex.Replace(line, @"(?<!\\)" + _delimiter, "\uFFFE");
+            Datacolumns = line.Split("\uFFFE");
+
+            if (_hasHeader)
+            {
+                for (int i = 0; i < columns.Count; i++)
+                {
+                    bool isArray = false;
+                    string value = string.Empty;
+
+                    var column = columns[i];
+                    if (column.Index != -1)
+                    {
+                        if (column.size > 0)
+                            value = Datacolumns[i].Substring(column.Index, column.size);
+                        else
+                            value = Datacolumns[i];
+                    }
+                    else
+                    {
+                        if (Datacolumns[i].Contains("[") && Datacolumns[i].Contains("]"))
+                        {
+                            isArray = true;
+                            Datacolumns[i] = Datacolumns[i].Replace("[", "");
+                            Datacolumns[i] = Datacolumns[i].Replace("]", "");
+                            value = Datacolumns[i];
+                        }
+                        else
+                            value = Datacolumns[i];
+                    }
+
+                    value = Regex.Replace(value, @"(?<!\\)""", string.Empty);
+                    value = value.Replace("\\,", ",").Replace("\\\\", "\\");
+
+                    if (!isArray)
+                        column.PropertyInfo.SetValue(model, Convert.ChangeType(value, column.PropertyInfo.PropertyType, CultureInfo.InvariantCulture));
+                    else
+                    {
+                        Type typeArray = typeof(List<>).MakeGenericType(column.PropertyInfo.PropertyType.GenericTypeArguments);
+                        IList array = (IList)Activator.CreateInstance(typeArray);
+
+                        foreach (string item in value.Split("\uFFFF"))
+                            array.Add(Convert.ChangeType(item, column.PropertyInfo.PropertyType.GenericTypeArguments[0]));
+
+                        column.PropertyInfo.SetValue(model, array);
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < columns.Count; i++)
+                {
+                    var column = columns[i];
+                    column.PropertyInfo.SetValue(model, Convert.ChangeType(Datacolumns[i], column.PropertyInfo.PropertyType, CultureInfo.InvariantCulture));
+                }
+            }
+            return model;
         }
     }
 }

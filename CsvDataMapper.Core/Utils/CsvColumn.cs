@@ -12,6 +12,7 @@ namespace CsvDataMapper.Core.Utils
         public string Name { get; set; }
         public int Index { get; set; }
         public int size { get; set; }
+        public int Order { get; set; }
         public PropertyInfo PropertyInfo { get; set; }
 
         public CsvColumn()
