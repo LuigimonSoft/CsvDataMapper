@@ -1,6 +1,6 @@
 using CsvDataMapper.Core.Repositories.Interfaces;
 using CsvDataMapper.Core.Services.Interfaces;
-using CsvDataMapper.Core.Services
+using CsvDataMapper.Core.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Collections.Generic;
