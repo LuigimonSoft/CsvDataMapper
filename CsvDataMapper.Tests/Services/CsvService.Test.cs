@@ -11,7 +11,7 @@ namespace CsvDataMapper.Tests
   public class CsvServiceTests
   {
     private Mock<ICsvRepository> _csvRepositoryMock;
-    private CsvService _csvService;
+    private ICsvService _csvService;
 
     [TestInitialize]
     public void TestInitialize()
