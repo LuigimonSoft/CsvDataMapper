@@ -8,7 +8,7 @@ using CsvDataMapper.Core.Utils;
 
 namespace CsvDataMapper.Core.Repositories
 {
-    internal  class CsvRepository: ICsvRepository
+    public  class CsvRepository: ICsvRepository
     {
         private string _csvFilePath;
         private Encoding _encoding = Encoding.UTF8;

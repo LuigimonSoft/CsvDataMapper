@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CsvDataMapper.Core.Repositories.Interfaces
 {
-    internal interface ICsvRepository
+    public interface ICsvRepository
     {
         Task<string> ReadCsvFileAsStringAsync();
         string ReadCsvFileAsString();

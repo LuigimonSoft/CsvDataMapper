@@ -16,7 +16,7 @@ using System.Collections;
 
 namespace CsvDataMapper.Core.Services
 {
-    internal class CsvService : ICsvService
+    public class CsvService : ICsvService
     {
         private readonly ICsvRepository _csvRepository;
         private char _delimiter = ',';

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CsvDataMapper.Core.Services.Interfaces
 {
-    internal interface ICsvService
+    public interface ICsvService
     {
         Task<IList<TModel>> MapCsvToListModelAsync<TModel>() where TModel : new();
         IList<TModel> MapCsvToListModel<TModel>() where TModel : new();
